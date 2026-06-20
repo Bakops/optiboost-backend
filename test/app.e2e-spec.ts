@@ -13,6 +13,7 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api/v1');
     await app.init();
   });
 
@@ -20,10 +21,38 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', () => {
+  it('/api/v1 (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/api/v1')
       .expect(200)
-      .expect('Hello World!');
+      .expect(({ body }) => {
+        expect(body.status).toBe('ok');
+        expect(body.modules).toContain('auth');
+      });
+  });
+
+  it('/api/v1/dashboard/overview (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/api/v1/dashboard/overview')
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toHaveProperty('averageBasket');
+        expect(body).toHaveProperty('segments');
+      });
+  });
+
+  it('/api/v1/clients?status=À relancer (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/api/v1/clients')
+      .query({ status: 'À relancer' })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(Array.isArray(body.data)).toBe(true);
+        expect(
+          body.data.every(
+            (client: { status: string }) => client.status === 'À relancer',
+          ),
+        ).toBe(true);
+      });
   });
 });
