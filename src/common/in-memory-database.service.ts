@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  AuthSession,
   Campaign,
   CampaignRecipient,
   Client,
@@ -16,7 +17,7 @@ import {
 export class InMemoryDatabaseService {
   readonly organization: Organization = {
     id: 'org_optiboost_1',
-    name: 'Optique Martin',
+    name: 'Mehdi',
     industry: 'Optique',
     createdAt: '2026-01-01T09:00:00.000Z',
     updatedAt: '2026-06-20T09:00:00.000Z',
@@ -26,16 +27,18 @@ export class InMemoryDatabaseService {
     {
       id: 'usr_1',
       organizationId: 'org_optiboost_1',
-      firstName: 'Alice',
-      lastName: 'Martin',
-      email: 'owner@optique-martin.fr',
-      passwordHash: 'demo-password-hash',
+      firstName: 'Benali',
+      lastName: 'Mehdi',
+      email: 'owner@optiboost.fr',
+      passwordHash: 'hash:demo123',
       role: 'owner',
       provider: 'local',
       createdAt: '2026-01-02T09:00:00.000Z',
       updatedAt: '2026-06-20T09:00:00.000Z',
     },
   ];
+
+  readonly authSessions: AuthSession[] = [];
 
   readonly clients: Client[] = [
     {
@@ -46,7 +49,7 @@ export class InMemoryDatabaseService {
       fullName: 'Sophie Lefèvre',
       email: 's.lefevre@email.fr',
       phone: '+33610000001',
-      status: 'Fidèle',
+      status: 'Perdu',
       category: 'Premium',
       premiumStatus: true,
       lastPurchaseAt: '2026-05-12T10:00:00.000Z',

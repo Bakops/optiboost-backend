@@ -55,4 +55,39 @@ describe('AppController (e2e)', () => {
         ).toBe(true);
       });
   });
+
+  it('auth session flow', async () => {
+    const loginResponse = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: 'owner@optique-martin.fr', password: 'demo123' })
+      .expect(201);
+
+    const accessToken = loginResponse.body.tokens.accessToken as string;
+    const refreshToken = loginResponse.body.tokens.refreshToken as string;
+
+    await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body.user.email).toBe('owner@optique-martin.fr');
+      });
+
+    const refreshResponse = await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .send({ refreshToken })
+      .expect(201);
+
+    expect(refreshResponse.body.tokens.accessToken).not.toBe(accessToken);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/logout')
+      .send({ refreshToken: refreshResponse.body.tokens.refreshToken })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${refreshResponse.body.tokens.accessToken}`)
+      .expect(401);
+  });
 });

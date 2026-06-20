@@ -32,6 +32,17 @@ export interface User {
   updatedAt: string;
 }
 
+export interface AuthSession {
+  id: string;
+  userId: string;
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresAt: string;
+  refreshTokenExpiresAt: string;
+  createdAt: string;
+  revokedAt: string | null;
+}
+
 export interface Client {
   id: string;
   organizationId: string;

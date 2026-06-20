@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -35,8 +35,11 @@ export class AuthController {
   }
 
   @Post('logout')
-  logout(@Body() body: { refreshToken?: string }) {
-    return this.authService.logout(body);
+  logout(
+    @Body() body: { refreshToken?: string },
+    @Headers('authorization') authorization?: string,
+  ) {
+    return this.authService.logout(body, authorization);
   }
 
   @Post('forgot-password')
@@ -50,7 +53,7 @@ export class AuthController {
   }
 
   @Get('me')
-  me() {
-    return this.authService.me();
+  me(@Headers('authorization') authorization?: string) {
+    return this.authService.me(authorization);
   }
 }
